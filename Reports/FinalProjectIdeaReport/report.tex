@@ -1,0 +1,90 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{pgfgantt}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Brian Tipton, Aiden Nelson, Austin Herkert}
+\lhead{Final Project Team and Idea}
+% \rfoot{Page \thepage}
+\lfoot{\today}
+
+\begin{document}
+
+\begin{center}
+	\LARGE \textbf{Race the Storm}
+\end{center}
+
+\section*{Game Overview}
+Taking inspiration from the game \href{https://store.steampowered.com/app/253030/Race_The_Sun/}{\textit{Race the Sun}},
+in which a geometric plane flies through generated polygon terrain in an attempt to stop the sun from setting, we are going to build a hovering 3D land speeder going through generated desert terrain.
+
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[scale=0.1]{racethesun.jpg}
+	\end{center}
+	\caption{\textit{Race the Sun Gameplay Screenshot from \href{https://store.steampowered.com/app/253030/Race_The_Sun/}{Steam}}}
+	\label{fig:racethesun}
+\end{figure}
+
+\subsection*{General Mechanics}
+The user will be able to steer left and right through the shifting dunes and obstacles.
+The more times that a user runs into an obstacle or goes without getting a boost, the more the impending sand storm catches up to them.
+The speed only multiplies with each powerup you collect, ever so slightly increasing the difficulty of the game for each speed up.
+Once the storm reaches them (from behind) or a player crashes, the level is completed and the player loses.
+
+\subsection*{Aesthetic}
+The overall aesthetic of the game will be of a arid desert landscape.
+The players can expect to see pyramids, obelisks, and sphinxes containing powerups and points of interest.
+
+\subsection*{Narrative}
+The narrative is that the player controlling a hovering land speeder that is constantly speeding away from an impending sand storm that is sure to destroy it.
+The only way to avoid that horrific fate is to race through the desert avoiding obstacles and collecting boosts to keep them moving faster and faster.
+
+\pagebreak
+\subsection*{Technology}
+\begin{itemize}
+	\item \textit{Unity}\\
+	      We will be using Unity Game Engine as our development platform for rapid game protyping and testing.
+	\item \textit{Assets }\\
+	      Free and or attribution required assets will used to build the landscape for our game.
+	\item \textit{Landscape Generation}\\
+	      We will use a pseudorandom object generation algorithm for building the incoming environment as the player progresses.
+\end{itemize}
+\section*{Project Timeline}
+\begin{ganttchart}[
+		x unit=2.0cm,
+		y unit chart=0.9cm,
+		vgrid,
+		bar/.style={fill=blue!50},
+		incomplete/.style={fill=white},
+		progress label text={},
+		bar height=0.7,
+		group right shift=0,
+		group left shift=0,
+		group top shift=.7,
+		group height=.3,
+		group peaks width={0.1},
+		inline]{1}{9}
+	\ganttgroup{Assets}{1}{2} \\
+	\ganttbar{Selection}{1}{2} \\
+	\ganttgroup{Camera}{2}{3} \\
+	\ganttbar{Setup}{2}{3} \\
+	\ganttgroup{Movement}{3}{5} \\
+	\ganttbar{Implementation}{3}{4} \\
+	\ganttbar{Testing}{4}{5} \\
+	\ganttgroup{Obstacles}{5}{7} \\
+	\ganttbar{Generation}{5}{6} \\
+	\ganttbar{Testing}{6}{7} \\
+	\ganttgroup{Powerups}{7}{8} \\
+	\ganttbar{Implementation}{7}{8} \\
+	\ganttbar{Testing}{8}{8} \\
+	\ganttgroup{Goal}{8}{9} \\
+	\ganttbar{Implementation}{8}{9} \\
+	\ganttbar{Testing}{9}{9}
+\end{ganttchart}
+\end{document}
