@@ -4,7 +4,7 @@ using UnityEngine;
 public class Landspeeder : MonoBehaviour
 {
     public static Landspeeder Instance { get; private set; }
-    
+
     private Rigidbody _rb;
     private Quaternion _initialRotation;
     private Quaternion _targetRotation;
@@ -12,9 +12,9 @@ public class Landspeeder : MonoBehaviour
     public float rotationSpeed = 5f;
     public float tiltAngle = 25f;
 
-    private bool PushLeft => Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow);
-    private bool PushRight => Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow);
-    private bool PushUp => Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow);
+    private bool IsPushingLeft => Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow);
+    private bool IsPushingRight => Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow);
+    private bool IsPushingUp => Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow);
 
     private void Awake()
     {
@@ -47,15 +47,15 @@ public class Landspeeder : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.LeftShift))
         {
-            if (PushRight)
+            if (IsPushingRight)
             {
                 HoldRotation(-90f);
             }
-            else if (PushLeft)
+            else if (IsPushingLeft)
             {
                 HoldRotation(90f);
             }
-            else if (PushUp)
+            else if (IsPushingUp)
             {
                 HoldRotation(180f);
             }
@@ -66,11 +66,11 @@ public class Landspeeder : MonoBehaviour
         }
         else
         {
-            if (Input.GetKey(KeyCode.D))
+            if (IsPushingRight)
             {
                 HoldRotation(-tiltAngle);
             }
-            else if (Input.GetKey(KeyCode.A))
+            else if (IsPushingLeft)
             {
                 HoldRotation(tiltAngle);
             }
@@ -108,7 +108,8 @@ public class Landspeeder : MonoBehaviour
         ResetRotation();
     }
 
-    private float GetBarrelRollDirection() => PushLeft || (!PushLeft && !PushRight) ? 1f : -1f;
+    private float GetBarrelRollDirection() => IsPushingLeft ? 1f :
+        (!IsPushingLeft && !IsPushingRight) ? (Random.value < 0.5f ? 1f : -1f) : -1f;
 
     private void HoldRotation(float angle)
     {
