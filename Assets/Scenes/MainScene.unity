@@ -413,9 +413,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   forwardSpeed: 50
-  sidewaysSpeed: 15
-  tiltAngle: 30
-  tiltSpeed: 5
+  sidewaysSpeed: 25
+  destroyDistance: 100
+  planeLength: 0
 --- !u!1001 &2139020348
 PrefabInstance:
   m_ObjectHideFlags: 0

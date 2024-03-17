@@ -2,41 +2,41 @@ using UnityEngine;
 
 public class GroundController : MonoBehaviour
 {
-    public float forwardSpeed = 10f;
-    public float sidewaysSpeed = 5f;
-    public float tiltAngle = 30f;
-    public float tiltSpeed = 5f;
+    public float forwardSpeed = 50f;
+    public float sidewaysSpeed = 15f;
+    
+    public float destroyDistance = 100f;
+    public float planeLength = 200f;
 
-    private Transform vehicleTransform;
-    private Quaternion initialRotation;
+    private float lastZPosition;
+    private GameObject currentPlane;
 
     private void Start()
     {
-        GameObject vehicle = GameObject.FindWithTag("Landspeeder");
-        if (vehicle != null)
-        {
-            vehicleTransform = vehicle.transform;
-            initialRotation = vehicleTransform.rotation;
-        }
-        else
-        {
-            Debug.LogError("Landspeeder not found");
-        }
+        lastZPosition = transform.position.z + planeLength;
+        currentPlane = gameObject;
     }
 
     private void Update()
     {
         float horizontalInput = Input.GetAxis("Horizontal");
-
         transform.Translate(Vector3.back * (forwardSpeed * Time.deltaTime));
         transform.Translate(Vector3.right * (-horizontalInput * sidewaysSpeed * Time.deltaTime));
 
-        if (transform.position.z <= -100f)
+        if (currentPlane.transform.position.z <= Landspeeder.Instance.transform.position.z - destroyDistance)
         {
-            var transform1 = transform;
-            var position = transform1.position;
-            position = new Vector3(position.x, position.y, 0f);
-            transform1.position = position;
+            Destroy(currentPlane);
+            GenerateNewPlane();
         }
+    }
+
+    private void GenerateNewPlane()
+    {
+        Vector3 newPosition = new Vector3(0f, transform.position.y, lastZPosition);
+        currentPlane = Instantiate(gameObject, newPosition, Quaternion.identity);
+        currentPlane.transform.SetParent(transform.parent);
+        currentPlane.GetComponent<GroundController>().enabled = true;
+
+        lastZPosition += planeLength;
     }
 }

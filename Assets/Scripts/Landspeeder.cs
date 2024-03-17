@@ -4,13 +4,18 @@ using UnityEngine;
 public class Landspeeder : MonoBehaviour
 {
     public static Landspeeder Instance { get; private set; }
-    private Rigidbody rb;
-    private Quaternion initialRotation;
-    private Quaternion targetRotation;
     
+    private Rigidbody _rb;
+    private Quaternion _initialRotation;
+    private Quaternion _targetRotation;
+
     public float rotationSpeed = 5f;
     public float tiltAngle = 25f;
-    
+
+    private bool PushLeft => Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow);
+    private bool PushRight => Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow);
+    private bool PushUp => Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow);
+
     private void Awake()
     {
         if (Instance == null)
@@ -22,9 +27,9 @@ public class Landspeeder : MonoBehaviour
             Destroy(gameObject);
         }
 
-        rb = GetComponent<Rigidbody>();
-        initialRotation = transform.rotation;
-        targetRotation = initialRotation;
+        _rb = GetComponent<Rigidbody>();
+        _initialRotation = transform.rotation;
+        _targetRotation = _initialRotation;
     }
 
     void Update()
@@ -42,15 +47,15 @@ public class Landspeeder : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.LeftShift))
         {
-            if (Input.GetKey(KeyCode.D))
+            if (PushRight)
             {
                 HoldRotation(-90f);
             }
-            else if (Input.GetKey(KeyCode.A))
+            else if (PushLeft)
             {
                 HoldRotation(90f);
             }
-            else if (Input.GetKey(KeyCode.W))
+            else if (PushUp)
             {
                 HoldRotation(180f);
             }
@@ -75,6 +80,7 @@ public class Landspeeder : MonoBehaviour
             }
         }
     }
+
     public void DoABarrelRoll(int numTimes)
     {
         StartCoroutine(BarrelRollCoroutine(numTimes));
@@ -83,18 +89,17 @@ public class Landspeeder : MonoBehaviour
     private IEnumerator BarrelRollCoroutine(int numTimes)
     {
         float speed = 0.25f;
+        float direction = GetBarrelRollDirection();
         for (int i = 0; i < numTimes; i++)
         {
             float elapsedTime = 0f;
             float startAngle = transform.rotation.eulerAngles.z;
-            float targetAngle = startAngle + 360f;
-
+            float targetAngle = startAngle + 360f * direction;
             while (elapsedTime < speed)
             {
                 float t = elapsedTime / speed;
                 float angle = Mathf.Lerp(startAngle, targetAngle, t);
                 transform.rotation = Quaternion.Euler(0f, 0f, angle);
-
                 elapsedTime += Time.deltaTime;
                 yield return null;
             }
@@ -103,18 +108,20 @@ public class Landspeeder : MonoBehaviour
         ResetRotation();
     }
 
+    private float GetBarrelRollDirection() => PushLeft || (!PushLeft && !PushRight) ? 1f : -1f;
+
     private void HoldRotation(float angle)
     {
-        targetRotation = Quaternion.Euler(0f, 0f, angle);
+        _targetRotation = Quaternion.Euler(0f, 0f, angle);
     }
 
     private void ResetRotation()
     {
-        targetRotation = initialRotation;
+        _targetRotation = _initialRotation;
     }
 
     private void SmoothRotation()
     {
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+        transform.rotation = Quaternion.Slerp(transform.rotation, _targetRotation, rotationSpeed * Time.deltaTime);
     }
 }
