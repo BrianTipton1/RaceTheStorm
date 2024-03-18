@@ -86,6 +86,16 @@ public class Landspeeder : MonoBehaviour
         StartCoroutine(BarrelRollCoroutine(numTimes));
     }
 
+    public static float GetZPos()
+    {
+        return Instance.transform.position.z;
+    }
+
+    public static float GetXPos()
+    {
+        return Instance.transform.position.x;
+    }
+
     private IEnumerator BarrelRollCoroutine(int numTimes)
     {
         float speed = 0.25f;
@@ -124,5 +134,11 @@ public class Landspeeder : MonoBehaviour
     private void SmoothRotation()
     {
         transform.rotation = Quaternion.Slerp(transform.rotation, _targetRotation, rotationSpeed * Time.deltaTime);
+    }
+
+    void OnCollisionEnter(Collision other)
+    {
+        // print("Collision detected with " + other.gameObject.name);
+        Destroy(other.gameObject);
     }
 }
