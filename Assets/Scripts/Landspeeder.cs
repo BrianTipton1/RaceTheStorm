@@ -105,6 +105,16 @@ public class Landspeeder : MonoBehaviour
         StartCoroutine(BarrelRollCoroutine(numTimes, barrelRollSpeed));
     }
 
+    public static float GetZPos()
+    {
+        return Instance.transform.position.z;
+    }
+
+    public static float GetXPos()
+    {
+        return Instance.transform.position.x;
+    }
+
     private IEnumerator BarrelRollCoroutine(int numTimes, float barrelRollSpeed)
     {
         Quaternion initialRotation = transform.rotation;
@@ -149,5 +159,11 @@ public class Landspeeder : MonoBehaviour
     {
         Quaternion lockedRotation = Quaternion.Euler(0f, _targetRotation.eulerAngles.y, _targetRotation.eulerAngles.z);
         transform.rotation = Quaternion.Slerp(transform.rotation, lockedRotation, rotationSpeed * Time.deltaTime);
+    }
+
+    void OnCollisionEnter(Collision other)
+    {
+        // print("Collision detected with " + other.gameObject.name);
+        Destroy(other.gameObject);
     }
 }

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6855629485451448901}
   - component: {fileID: 783454474696337560}
   - component: {fileID: 3490819920176845092}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Planchet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   - component: {fileID: 5823821114578928713}
   - component: {fileID: 8700279695237796924}
   - component: {fileID: 4044451260191221531}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Pare-brise
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -177,7 +177,7 @@ GameObject:
   - component: {fileID: 4645514555360738139}
   - component: {fileID: 7695056262984865463}
   - component: {fileID: 6339143618808054265}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Bas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -260,7 +260,7 @@ GameObject:
   - component: {fileID: 9126154577667870728}
   - component: {fileID: 8397060261071380156}
   - component: {fileID: 8492106977846743584}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Carter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -343,7 +343,7 @@ GameObject:
   - component: {fileID: 585559735552313059}
   - component: {fileID: 7138733493619167633}
   - component: {fileID: 6384645883967832781}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Turbines
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -426,7 +426,7 @@ GameObject:
   - component: {fileID: 3213067445768591587}
   - component: {fileID: 3832113132147332004}
   - component: {fileID: 7993025780191798414}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Consoles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -509,7 +509,7 @@ GameObject:
   - component: {fileID: 2819527791368126684}
   - component: {fileID: 5337734105508008360}
   - component: {fileID: 606897437232360837}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Support_Tu
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -592,7 +592,7 @@ GameObject:
   - component: {fileID: 7930446868952747647}
   - component: {fileID: 1074892271803416820}
   - component: {fileID: 3977146560809611356}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Haut
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -673,9 +673,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8090907111487554477}
-  - component: {fileID: 8629482219809391245}
   - component: {fileID: 427278172475637763}
-  m_Layer: 0
+  - component: {fileID: 9117148290429907260}
+  m_Layer: 6
   m_Name: Landspeeder
   m_TagString: Landspeeder
   m_Icon: {fileID: 0}
@@ -706,22 +706,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!54 &8629482219809391245
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8864066523662489879}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_UseGravity: 0
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!114 &427278172475637763
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -734,6 +718,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a924deb023ce4a9da9da44b5cac81b04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rotationSpeed: 5
+  tiltAngle: 25
+--- !u!64 &9117148290429907260
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8864066523662489879}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -4841036132420597691, guid: 46478303ba85dffd2a775d2bbaf7f0cc, type: 3}
 --- !u!1 &9116849566417796832
 GameObject:
   m_ObjectHideFlags: 0
@@ -745,7 +745,7 @@ GameObject:
   - component: {fileID: 4887458593752129812}
   - component: {fileID: 1980702819418370796}
   - component: {fileID: 5467940394606580092}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cabine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
