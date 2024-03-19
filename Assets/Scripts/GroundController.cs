@@ -2,6 +2,7 @@ using UnityEngine;
 using uRandom = UnityEngine.Random;
 using System.Collections.Generic;
 using System;
+using Player;
 
 [Serializable]
 public class SizeTuple
