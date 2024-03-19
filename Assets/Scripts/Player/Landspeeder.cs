@@ -15,13 +15,15 @@ namespace Player
     {
         public static Landspeeder Instance { get; private set; }
 
-        private static SpeederTransform Transform => SpeederTransform.Instance;
+        private SpeederTransform Transform => SpeederTransform.Instance;
 
         private readonly Controller _controller = Controller.Instance;
 
         private Rigidbody _rb;
         private Quaternion _initialRotation;
         private Quaternion _targetRotation;
+
+        public bool IsJumping { get; private set; } = false;
 
         public float rotationSpeed = 5f;
         public float tiltAngleZ = 25f;
@@ -43,7 +45,7 @@ namespace Player
             }
 
             _rb = GetComponent<Rigidbody>();
-            _initialRotation = transform.rotation;
+            _initialRotation = Transform.rotation;
             _targetRotation = _initialRotation;
         }
 
@@ -55,17 +57,18 @@ namespace Player
                 DoABarrelRoll(1);
             }
 
-            if (Input.GetKeyDown(KeyCode.J))
+            if (Input.GetKeyDown(KeyCode.J) && !IsJumping)
             {
                 Jump();
             }
 
-            if (Input.GetKeyDown(KeyCode.R))
+            if (Input.GetKeyDown(KeyCode.R) && !Transform.IsReplaying)
             {
+                Transform.Replay(Transform.GetMotionsNFramesBack(250), true);
             }
 
             _controller.RunMovements(UnModifiedMovements());
-            _controller.RunMovements(ModifiedMovements());
+            _controller.RunMovements(ShiftModifiedMovements());
 
             SmoothRotation();
         }
@@ -79,21 +82,21 @@ namespace Player
                     Direction = Direction.Down,
                     Modifier = Modifier.None,
                     Action = () =>
-                        HoldRotation(-GetZAxisDirection() * 0f, tiltAngleY * Input.GetAxis("Horizontal"))
+                        HoldRotation(-GetZAxisDirection() * 0f, tiltAngleY * _controller.HorizontalInput)
                 },
                 new()
                 {
                     Direction = Direction.Right,
                     Modifier = Modifier.None,
                     Action = () =>
-                        HoldRotation(-tiltAngleZ, tiltAngleY * Input.GetAxis("Horizontal"))
+                        HoldRotation(-tiltAngleZ, tiltAngleY * _controller.HorizontalInput)
                 },
                 new()
                 {
                     Direction = Direction.Left,
                     Modifier = Modifier.None,
                     Action = () =>
-                        HoldRotation(tiltAngleZ, tiltAngleY * Input.GetAxis("Horizontal"))
+                        HoldRotation(tiltAngleZ, tiltAngleY * _controller.HorizontalInput)
                 },
                 new()
                 {
@@ -104,7 +107,7 @@ namespace Player
             };
         }
 
-        private List<Movement> ModifiedMovements()
+        private List<Movement> ShiftModifiedMovements()
         {
             return new()
             {
@@ -113,28 +116,28 @@ namespace Player
                     Direction = Direction.Down,
                     Modifier = Modifier.Shift,
                     Action = () =>
-                        HoldRotation(-GetZAxisDirection() * 0f, tiltAngleY * Input.GetAxis("Horizontal"))
+                        HoldRotation(-GetZAxisDirection() * 0f, tiltAngleY * _controller.HorizontalInput)
                 },
                 new()
                 {
                     Direction = Direction.Up,
                     Modifier = Modifier.Shift,
                     Action = () =>
-                        HoldRotation(GetZAxisDirection() * 180f, tiltAngleY * Input.GetAxis("Horizontal"))
+                        HoldRotation(GetZAxisDirection() * 180f, tiltAngleY * _controller.HorizontalInput)
                 },
                 new()
                 {
                     Direction = Direction.Right,
                     Modifier = Modifier.Shift,
                     Action = () =>
-                        HoldRotation(-90f, tiltAngleY * Input.GetAxis("Horizontal"))
+                        HoldRotation(-90f, tiltAngleY * _controller.HorizontalInput)
                 },
                 new()
                 {
                     Direction = Direction.Left,
                     Modifier = Modifier.Shift,
                     Action = () =>
-                        HoldRotation(90f, tiltAngleY * Input.GetAxis("Horizontal"))
+                        HoldRotation(90f, tiltAngleY * _controller.HorizontalInput)
                 },
                 new()
                 {
@@ -167,13 +170,13 @@ namespace Player
 
         private IEnumerator BarrelRollCoroutine(int numTimes, float barrelRollSpeed)
         {
-            Quaternion initialRotation = transform.rotation;
+            Quaternion initialRotation = Transform.rotation;
             float initialYRotation = initialRotation.eulerAngles.y;
 
             for (int i = 0; i < numTimes; i++)
             {
                 float elapsedTime = 0f;
-                float startAngle = transform.rotation.eulerAngles.z;
+                float startAngle = Transform.rotation.eulerAngles.z;
                 float targetAngle = startAngle + 360f * GetZAxisDirection();
 
                 while (elapsedTime < barrelRollSpeed)
@@ -182,7 +185,7 @@ namespace Player
                     float angle = Mathf.Lerp(startAngle, targetAngle, t);
 
                     Quaternion targetRotation = Quaternion.Euler(0f, initialYRotation, angle);
-                    transform.rotation = targetRotation;
+                    Transform.rotation = targetRotation;
 
                     elapsedTime += Time.deltaTime;
                     yield return null;
@@ -199,13 +202,15 @@ namespace Player
 
         private IEnumerator JumpCoroutine()
         {
-            Vector3 startPosition = transform.position;
+            IsJumping = true;
+            Vector3 startPosition = Transform.position;
             float elapsedTime = 0f;
 
-            Quaternion startRotation = transform.rotation;
+            Quaternion startRotation = Transform.rotation;
             Quaternion targetRotation = startRotation;
 
-            float maxTiltAngle = Mathf.Clamp(jumpHeight * 10f, 0f, 90f);
+            float maxTiltAngle = Mathf.Clamp(jumpHeight * 100f, 0f, 90f);
+            float tiltStartRatio = 0.4f; // Start tilting forward at 40% of the jump duration
 
             while (elapsedTime < jumpDuration)
             {
@@ -215,82 +220,97 @@ namespace Player
                 Vector3 newPosition = startPosition;
                 newPosition.y = startPosition.y + heightOffset;
 
-                transform.position = newPosition;
+                Transform.position = newPosition;
 
                 float tiltAngle;
-                if (t < 0.25f)
+                if (t < tiltStartRatio)
                 {
-                    tiltAngle = Mathf.Lerp(0f, maxTiltAngle, t * 4f);
+                    tiltAngle = Mathf.Lerp(0f, -maxTiltAngle, t / tiltStartRatio);
                 }
-                else if (t < 0.55f)
+                else if (t < 0.5f)
                 {
-                    tiltAngle = maxTiltAngle;
+                    tiltAngle = Mathf.Lerp(-maxTiltAngle, -maxTiltAngle * 0.5f,
+                        (t - tiltStartRatio) / (0.5f - tiltStartRatio));
                 }
                 else
                 {
-                    tiltAngle = Mathf.Lerp(maxTiltAngle, -maxTiltAngle,
-                        (t - 0.55f) * 4f);
+                    tiltAngle = Mathf.Lerp(-maxTiltAngle * 0.5f, 0f, (t - 0.5f) / 0.5f);
                 }
 
                 Quaternion tiltRotation = Quaternion.Euler(tiltAngle, 0f, 0f);
                 targetRotation = GetRotationDuringJump(targetRotation);
                 Quaternion combinedRotation = tiltRotation * targetRotation;
-                transform.rotation =
-                    Quaternion.Slerp(transform.rotation, combinedRotation, rotationSpeed * Time.deltaTime);
+                Transform.rotation =
+                    Quaternion.Slerp(Transform.rotation, combinedRotation, rotationSpeed * Time.deltaTime);
 
                 elapsedTime += Time.deltaTime;
                 yield return null;
             }
 
-            transform.position = Vector3.zero;
+            Transform.position = Vector3.zero;
+            IsJumping = false;
         }
-
 
         private Quaternion GetRotationDuringJump(Quaternion currentRotation)
         {
-            if (_controller.IsPushingShift)
-            {
-                if (_controller.IsPushingDown)
+            return _controller.RunMovements(
+                new List<Movement<Quaternion>>()
                 {
-                    return Quaternion.Euler(-GetZAxisDirection() * 0f, tiltAngleY * Input.GetAxis("Horizontal"),
-                        currentRotation.eulerAngles.z);
+                    new()
+                    {
+                        Modifier = Modifier.Shift,
+                        Direction = Direction.Down,
+                        Action = () =>
+                            Quaternion.Euler(-GetZAxisDirection() * 0f,
+                                tiltAngleY * _controller.HorizontalInput,
+                                currentRotation.eulerAngles.z)
+                    },
+                    new()
+                    {
+                        Modifier = Modifier.Shift,
+                        Direction = Direction.Up,
+                        Action = () => Quaternion.Euler(GetZAxisDirection() * 0f,
+                            tiltAngleY * _controller.HorizontalInput,
+                            currentRotation.eulerAngles.z)
+                    },
+                    new()
+                    {
+                        Modifier = Modifier.Shift,
+                        Direction = Direction.Right,
+                        Action = () => Quaternion.Euler(currentRotation.eulerAngles.x,
+                            tiltAngleY * _controller.HorizontalInput, -90f)
+                    },
+                    new()
+                    {
+                        Modifier = Modifier.Shift,
+                        Direction = Direction.Left,
+                        Action = () => Quaternion.Euler(currentRotation.eulerAngles.x,
+                            tiltAngleY * _controller.HorizontalInput, 90f)
+                    },
+                    new()
+                    {
+                        Modifier = Modifier.None,
+                        Direction = Direction.Down,
+                        Action = () => Quaternion.Euler(-GetZAxisDirection() * 0f,
+                            tiltAngleY * _controller.HorizontalInput,
+                            currentRotation.eulerAngles.z)
+                    },
+                    new()
+                    {
+                        Modifier = Modifier.None,
+                        Direction = Direction.Right,
+                        Action = () => Quaternion.Euler(currentRotation.eulerAngles.x,
+                            tiltAngleY * _controller.HorizontalInput, -tiltAngleZ)
+                    },
+                    new()
+                    {
+                        Modifier = Modifier.None,
+                        Direction = Direction.Left,
+                        Action = () => Quaternion.Euler(currentRotation.eulerAngles.x,
+                            tiltAngleY * _controller.HorizontalInput, tiltAngleZ)
+                    },
                 }
-                else if (_controller.IsPushingUp)
-                {
-                    return Quaternion.Euler(GetZAxisDirection() * 0f, tiltAngleY * Input.GetAxis("Horizontal"),
-                        currentRotation.eulerAngles.z);
-                }
-                else if (_controller.IsPushingRight)
-                {
-                    return Quaternion.Euler(currentRotation.eulerAngles.x,
-                        tiltAngleY * Input.GetAxis("Horizontal"), -90f);
-                }
-                else if (_controller.IsPushingLeft)
-                {
-                    return Quaternion.Euler(currentRotation.eulerAngles.x,
-                        tiltAngleY * Input.GetAxis("Horizontal"), 90f);
-                }
-            }
-            else
-            {
-                if (_controller.IsPushingDown)
-                {
-                    return Quaternion.Euler(-GetZAxisDirection() * 0f, tiltAngleY * Input.GetAxis("Horizontal"),
-                        currentRotation.eulerAngles.z);
-                }
-                else if (_controller.IsPushingRight)
-                {
-                    return Quaternion.Euler(currentRotation.eulerAngles.x,
-                        tiltAngleY * Input.GetAxis("Horizontal"), -tiltAngleZ);
-                }
-                else if (_controller.IsPushingLeft)
-                {
-                    return Quaternion.Euler(currentRotation.eulerAngles.x,
-                        tiltAngleY * Input.GetAxis("Horizontal"), tiltAngleZ);
-                }
-            }
-
-            return currentRotation;
+            )?.Result ?? currentRotation;
         }
 
         private float GetZAxisDirection() => _controller.IsPushingLeft
@@ -313,7 +333,7 @@ namespace Player
         {
             Quaternion lockedRotation =
                 Quaternion.Euler(0f, _targetRotation.eulerAngles.y, _targetRotation.eulerAngles.z);
-            transform.rotation = Quaternion.Slerp(transform.rotation, lockedRotation, rotationSpeed * Time.deltaTime);
+            Transform.rotation = Quaternion.Slerp(Transform.rotation, lockedRotation, rotationSpeed * Time.deltaTime);
         }
 
         void OnCollisionEnter(Collision other)

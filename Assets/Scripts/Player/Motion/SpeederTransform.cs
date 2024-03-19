@@ -10,13 +10,13 @@ namespace Player.Motion
     {
         public static SpeederTransform Instance { get; private set; }
         private Transform T;
-        
+
         private readonly Dictionary<int, List<Vector3>> _positionMap = new();
         private readonly Dictionary<int, List<Quaternion>> _rotationMap = new();
         private readonly Dictionary<int, List<Vector3>> _scaleMap = new();
-        
+
         public int MaxStored { get; set; } = Int32.MaxValue;
-        
+
         public bool IsReplaying { get; private set; }
 
         private void Awake()
@@ -96,8 +96,12 @@ namespace Player.Motion
             };
         }
 
-        public SpeederMotion GetMotionsFromToNow(int fromFrame) => this.GetMotionsToFrom(fromFrame, Time.frameCount);
-
+        public SpeederMotion GetMotionsNFramesBack(int nFramesBack)
+        {
+            int toFrame = Time.frameCount;
+            int fromFrame = Mathf.Max(0, toFrame - nFramesBack);
+            return this.GetMotionsToFrom(fromFrame, toFrame);
+        }
         public void TrimDictionary<TValue>(Dictionary<int, List<TValue>> dictionary)
         {
             if (dictionary.Count > MaxStored)
@@ -140,9 +144,9 @@ namespace Player.Motion
                     T.position = positions[j];
                     T.rotation = rotations[j];
                     T.localScale = scales[j];
-
-                    yield return null;
                 }
+
+                yield return null;
             }
 
             IsReplaying = false;

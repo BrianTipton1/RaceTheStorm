@@ -62,7 +62,6 @@ namespace Player.SpeederInput
         {
             return (direction, modifier) switch
             {
-
                 (Direction.Down, Modifier.None) when IsPushingDown =>
                     (true, Direction.Down, Modifier.None),
 
@@ -80,7 +79,8 @@ namespace Player.SpeederInput
 
                 (Direction.Any, Modifier.None) when IsAnyPushing =>
                     (true, Direction.Any, Modifier.None),
-                
+
+                //
                 (Direction.Down, Modifier.Shift) when IsPushingDown && IsPushingShift =>
                     (true, Direction.Down, Modifier.Shift),
 
@@ -91,6 +91,25 @@ namespace Player.SpeederInput
                     (true, Direction.Left, Modifier.Shift),
 
                 (Direction.Up, Modifier.Shift) when IsPushingUp && IsPushingShift =>
+                    (true, Direction.Up, Modifier.Shift),
+                
+                (Direction.None, Modifier.Shift) when IsPushingNone && IsPushingShift =>
+                    (true, Direction.Up, Modifier.Shift),
+                
+                // 
+                (Direction.Down, Modifier.Caps) when IsPushingDown && IsPushingCaps =>
+                    (true, Direction.Down, Modifier.Shift),
+
+                (Direction.Right, Modifier.Caps) when IsPushingRight && IsPushingCaps =>
+                    (true, Direction.Right, Modifier.Shift),
+
+                (Direction.Left, Modifier.Caps) when IsPushingLeft && IsPushingCaps =>
+                    (true, Direction.Left, Modifier.Shift),
+
+                (Direction.Up, Modifier.Caps) when IsPushingUp && IsPushingCaps =>
+                    (true, Direction.Up, Modifier.Shift),
+
+                (Direction.None, Modifier.Caps) when IsPushingNone && IsPushingCaps =>
                     (true, Direction.Up, Modifier.Shift),
 
                 _ => (false, Direction.None, Modifier.None)
