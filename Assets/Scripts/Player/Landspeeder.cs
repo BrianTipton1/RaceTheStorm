@@ -32,8 +32,7 @@ namespace Player
         public float jumpHeight = 5f;
         public float jumpDuration = 1f;
 
-
-        private void Awake()
+        void Awake()
         {
             if (Instance == null)
             {
@@ -338,8 +337,13 @@ namespace Player
 
         void OnCollisionEnter(Collision other)
         {
-            // print("Collision detected with " + other.gameObject.name);
-            Destroy(other.gameObject);
+            // Keep going up the hierarchy until we find a parent with an "Obstacle" tag
+            Transform parent = other.transform;
+            while (parent != null && parent.tag != "Obstacle")
+            {
+                parent = parent.parent;
+            }
+            if(parent) Destroy(parent.gameObject);
         }
     }
 }

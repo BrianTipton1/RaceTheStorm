@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18029127, g: 0.22572401, b: 0.3069303, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028352, g: 0.22571376, b: 0.30692244, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -390,21 +390,9 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 427278172475637763, guid: b679af9710b384405ad12c5255377cfd, type: 3}
-      propertyPath: jumpHeight
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 427278172475637763, guid: b679af9710b384405ad12c5255377cfd, type: 3}
-      propertyPath: tiltAngleY
-      value: 15
-      objectReference: {fileID: 0}
-    - target: {fileID: 427278172475637763, guid: b679af9710b384405ad12c5255377cfd, type: 3}
-      propertyPath: tiltAngleZ
-      value: 25
-      objectReference: {fileID: 0}
-    - target: {fileID: 427278172475637763, guid: b679af9710b384405ad12c5255377cfd, type: 3}
-      propertyPath: jumpDuration
-      value: 1
+    - target: {fileID: 1831721563, guid: b679af9710b384405ad12c5255377cfd, type: 3}
+      propertyPath: m_Constraints
+      value: 126
       objectReference: {fileID: 0}
     - target: {fileID: 8090907111487554477, guid: b679af9710b384405ad12c5255377cfd, type: 3}
       propertyPath: m_RootOrder
@@ -454,22 +442,9 @@ PrefabInstance:
       propertyPath: m_Name
       value: Landspeeder
       objectReference: {fileID: 0}
+    - target: {fileID: 9117148290429907260, guid: b679af9710b384405ad12c5255377cfd, type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b679af9710b384405ad12c5255377cfd, type: 3}
---- !u!1 &1831721554 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8864066523662489879, guid: b679af9710b384405ad12c5255377cfd, type: 3}
-  m_PrefabInstance: {fileID: 1561086897}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1831721558
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1831721554}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d07fbe3a5a8f4a069ebaa46868b5b3ec, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

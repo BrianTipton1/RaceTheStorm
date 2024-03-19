@@ -64,7 +64,6 @@ public class GroundController : MonoBehaviour
         for (int i = 0; i < numPlanesLong; i++) {
             for (int j = 0; j < numPlanesWide; j++) {
                 Vector3 newPosition = new Vector3((j-Mathf.Floor(numPlanesWide/2)) * planeWidth + planeWidth / 2, ground.transform.position.y, i * planeLength);
-                print("Generating plane at " + newPosition);
                 GameObject currentPlane = Instantiate(ground, newPosition, Quaternion.identity);
                 currentPlane.transform.SetParent(transform);
                 grounds.Add(currentPlane);
@@ -97,7 +96,6 @@ public class GroundController : MonoBehaviour
         }
 
         foreach (GameObject ground in toRemove) {
-            print("Removing ground from " + ground.transform.position.ToString());
             grounds.Remove(ground);
         }
 
@@ -105,7 +103,7 @@ public class GroundController : MonoBehaviour
 
         if (maxZPosition < Landspeeder.GetZPos() + verticalDistToGenNewPlane)
         {
-            print("Generating the next line of planes");
+            // Generate the topmost of numPlanesWide new planes
             for (int i = 0; i < numPlanesWide; i++) {
                 GenerateNewPlane(new Vector3(minXPosition + i * planeWidth, ground.transform.position.y, maxZPosition + planeLength));
             }
@@ -113,8 +111,7 @@ public class GroundController : MonoBehaviour
         }
 
         if (maxXPosition < Landspeeder.GetXPos() + horizontalDistToGenNewPlane)
-        {  
-            print("Generating the column of planes to the right");
+        {
             // Generate the rightmost of numPlanesLong new planes
             for (int i = 0; i < numPlanesLong; i++) {
                 GenerateNewPlane(new Vector3(maxXPosition + planeWidth, ground.transform.position.y, maxZPosition - i * planeLength));
@@ -124,7 +121,6 @@ public class GroundController : MonoBehaviour
 
         if (minXPosition > Landspeeder.GetXPos() - horizontalDistToGenNewPlane)
         {
-            print("Generating the column of planes to the left");
             // Generate the leftmost of numPlanesLong new planes
             for (int i = 0; i < numPlanesLong; i++) {
                 GenerateNewPlane(new Vector3(minXPosition - planeWidth, ground.transform.position.y, maxZPosition - i * planeLength));
@@ -139,7 +135,6 @@ public class GroundController : MonoBehaviour
         currentPlane.transform.SetParent(transform);
         FillGround(currentPlane);
         grounds.Add(currentPlane);
-        print("Generating plane at " + position.ToString());
     }
 
     private GameObject MakeNewObstacle(float x, float y, float z, GameObject prefab)
