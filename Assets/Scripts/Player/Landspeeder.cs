@@ -1,5 +1,8 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using Player.Motion;
 using Player.SpeederInput;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -12,8 +15,9 @@ namespace Player
     {
         public static Landspeeder Instance { get; private set; }
 
+        private static SpeederTransform Transform => SpeederTransform.Instance;
+
         private readonly Controller _controller = Controller.Instance;
-        // private SpeederTransform _transform = Controller.LandSpeederTransform;
 
         private Rigidbody _rb;
         private Quaternion _initialRotation;
@@ -23,7 +27,7 @@ namespace Player
         public float tiltAngleZ = 25f;
         public float tiltAngleY = 15f;
 
-        public float jumpHeight = 10f;
+        public float jumpHeight = 5f;
         public float jumpDuration = 1f;
 
 
@@ -45,6 +49,7 @@ namespace Player
 
         void Update()
         {
+            /// These are just placeholders to showcase functionality
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 DoABarrelRoll(1);
@@ -52,89 +57,92 @@ namespace Player
 
             if (Input.GetKeyDown(KeyCode.J))
             {
-                Jump(jumpHeight, jumpDuration);
+                Jump();
             }
 
-            RunUnmodifiedMovements();
-            RunModifiedMovements();
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+            }
+
+            _controller.RunMovements(UnModifiedMovements());
+            _controller.RunMovements(ModifiedMovements());
+
             SmoothRotation();
         }
 
-        private void RunModifiedMovements()
+        private List<Movement> UnModifiedMovements()
         {
-            _controller.RunMovements(
+            return new()
+            {
                 new()
                 {
-                    new()
-                    {
-                        Direction = Direction.Down,
-                        Modifier = Modifier.Shift,
-                        Action = () =>
-                            HoldRotation(-GetZAxisDirection() * 0f, tiltAngleY * _controller.HorizontalInput)
-                    },
-                    new()
-                    {
-                        Direction = Direction.Up,
-                        Modifier = Modifier.Shift,
-                        Action = () =>
-                            HoldRotation(GetZAxisDirection() * 180f, tiltAngleY * _controller.HorizontalInput)
-                    },
-                    new()
-                    {
-                        Direction = Direction.Right,
-                        Modifier = Modifier.Shift,
-                        Action = () =>
-                            HoldRotation(-90f, tiltAngleY * _controller.HorizontalInput)
-                    },
-                    new()
-                    {
-                        Direction = Direction.Left,
-                        Modifier = Modifier.Shift,
-                        Action = () =>
-                            HoldRotation(90f, tiltAngleY * _controller.HorizontalInput)
-                    },
-                    new()
-                    {
-                        Direction = Direction.None,
-                        Modifier = Modifier.Shift,
-                        Action = ResetRotation
-                    },
-                });
+                    Direction = Direction.Down,
+                    Modifier = Modifier.None,
+                    Action = () =>
+                        HoldRotation(-GetZAxisDirection() * 0f, tiltAngleY * Input.GetAxis("Horizontal"))
+                },
+                new()
+                {
+                    Direction = Direction.Right,
+                    Modifier = Modifier.None,
+                    Action = () =>
+                        HoldRotation(-tiltAngleZ, tiltAngleY * Input.GetAxis("Horizontal"))
+                },
+                new()
+                {
+                    Direction = Direction.Left,
+                    Modifier = Modifier.None,
+                    Action = () =>
+                        HoldRotation(tiltAngleZ, tiltAngleY * Input.GetAxis("Horizontal"))
+                },
+                new()
+                {
+                    Direction = Direction.None,
+                    Modifier = Modifier.None,
+                    Action = ResetRotation
+                }
+            };
         }
 
-        private void RunUnmodifiedMovements()
+        private List<Movement> ModifiedMovements()
         {
-            _controller.RunMovements(
+            return new()
+            {
                 new()
                 {
-                    new()
-                    {
-                        Direction = Direction.Down,
-                        Modifier = Modifier.None,
-                        Action = () =>
-                            HoldRotation(-GetZAxisDirection() * 0f, tiltAngleY * _controller.HorizontalInput)
-                    },
-                    new()
-                    {
-                        Direction = Direction.Right,
-                        Modifier = Modifier.None,
-                        Action = () =>
-                            HoldRotation(-tiltAngleZ, tiltAngleY * _controller.HorizontalInput)
-                    },
-                    new()
-                    {
-                        Direction = Direction.Left,
-                        Modifier = Modifier.None,
-                        Action = () =>
-                            HoldRotation(tiltAngleZ, tiltAngleY * _controller.HorizontalInput)
-                    },
-                    new()
-                    {
-                        Direction = Direction.None,
-                        Modifier = Modifier.None,
-                        Action = ResetRotation
-                    },
-                });
+                    Direction = Direction.Down,
+                    Modifier = Modifier.Shift,
+                    Action = () =>
+                        HoldRotation(-GetZAxisDirection() * 0f, tiltAngleY * Input.GetAxis("Horizontal"))
+                },
+                new()
+                {
+                    Direction = Direction.Up,
+                    Modifier = Modifier.Shift,
+                    Action = () =>
+                        HoldRotation(GetZAxisDirection() * 180f, tiltAngleY * Input.GetAxis("Horizontal"))
+                },
+                new()
+                {
+                    Direction = Direction.Right,
+                    Modifier = Modifier.Shift,
+                    Action = () =>
+                        HoldRotation(-90f, tiltAngleY * Input.GetAxis("Horizontal"))
+                },
+                new()
+                {
+                    Direction = Direction.Left,
+                    Modifier = Modifier.Shift,
+                    Action = () =>
+                        HoldRotation(90f, tiltAngleY * Input.GetAxis("Horizontal"))
+                },
+                new()
+                {
+                    Direction = Direction.None,
+                    Modifier = Modifier.Shift,
+                    Action = ResetRotation
+                }
+            };
         }
 
         /// <summary>
@@ -184,12 +192,12 @@ namespace Player
             ResetRotation();
         }
 
-        public void Jump(float jumpHeight, float jumpDuration)
+        public void Jump()
         {
-            StartCoroutine(JumpCoroutine(jumpHeight, jumpDuration));
+            StartCoroutine(JumpCoroutine());
         }
 
-        private IEnumerator JumpCoroutine(float jumpHeight, float jumpDuration)
+        private IEnumerator JumpCoroutine()
         {
             Vector3 startPosition = transform.position;
             float elapsedTime = 0f;
@@ -244,41 +252,41 @@ namespace Player
             {
                 if (_controller.IsPushingDown)
                 {
-                    return Quaternion.Euler(-GetZAxisDirection() * 0f, tiltAngleY * _controller.HorizontalInput,
+                    return Quaternion.Euler(-GetZAxisDirection() * 0f, tiltAngleY * Input.GetAxis("Horizontal"),
                         currentRotation.eulerAngles.z);
                 }
                 else if (_controller.IsPushingUp)
                 {
-                    return Quaternion.Euler(GetZAxisDirection() * 0f, tiltAngleY * _controller.HorizontalInput,
+                    return Quaternion.Euler(GetZAxisDirection() * 0f, tiltAngleY * Input.GetAxis("Horizontal"),
                         currentRotation.eulerAngles.z);
                 }
                 else if (_controller.IsPushingRight)
                 {
                     return Quaternion.Euler(currentRotation.eulerAngles.x,
-                        tiltAngleY * _controller.HorizontalInput, -90f);
+                        tiltAngleY * Input.GetAxis("Horizontal"), -90f);
                 }
                 else if (_controller.IsPushingLeft)
                 {
                     return Quaternion.Euler(currentRotation.eulerAngles.x,
-                        tiltAngleY * _controller.HorizontalInput, 90f);
+                        tiltAngleY * Input.GetAxis("Horizontal"), 90f);
                 }
             }
             else
             {
                 if (_controller.IsPushingDown)
                 {
-                    return Quaternion.Euler(-GetZAxisDirection() * 0f, tiltAngleY * _controller.HorizontalInput,
+                    return Quaternion.Euler(-GetZAxisDirection() * 0f, tiltAngleY * Input.GetAxis("Horizontal"),
                         currentRotation.eulerAngles.z);
                 }
                 else if (_controller.IsPushingRight)
                 {
                     return Quaternion.Euler(currentRotation.eulerAngles.x,
-                        tiltAngleY * _controller.HorizontalInput, -tiltAngleZ);
+                        tiltAngleY * Input.GetAxis("Horizontal"), -tiltAngleZ);
                 }
                 else if (_controller.IsPushingLeft)
                 {
                     return Quaternion.Euler(currentRotation.eulerAngles.x,
-                        tiltAngleY * _controller.HorizontalInput, tiltAngleZ);
+                        tiltAngleY * Input.GetAxis("Horizontal"), tiltAngleZ);
                 }
             }
 

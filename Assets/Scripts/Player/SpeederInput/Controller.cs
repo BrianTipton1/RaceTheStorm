@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
@@ -56,38 +57,58 @@ namespace Player.SpeederInput
         {
         }
 
-
-        public Func<SpeederActionResult> BuildAction(Movement movement) =>
-            () => this.HandleMovement(movement);
-
-        public Func<SpeederActionResult<T>> BuildAction<T>(Movement<T> movement) =>
-            () => this.HandleMovement(movement);
-
-        private (bool Fired, Direction Direction) HandleMovementSwitch(Direction direction, Modifier modifier)
+        private (bool fired, Direction direction, Modifier modifier) HandleMovementSwitch(Direction direction,
+            Modifier modifier)
         {
             return (direction, modifier) switch
             {
-                (Direction.Down, Modifier.Shift) when IsPushingDown && IsPushingShift => (true, Direction.Down),
-                (Direction.Right, Modifier.Shift) when IsPushingRight && IsPushingShift => (true, Direction.Right),
-                (Direction.Left, Modifier.Shift) when IsPushingLeft && IsPushingShift => (true, Direction.Left),
-                (Direction.Up, Modifier.Shift) when IsPushingUp && IsPushingShift => (true, Direction.Up),
-                (Direction.Down, Modifier.None) when IsPushingDown => (true, Direction.Down),
-                (Direction.Right, Modifier.None) when IsPushingRight => (true, Direction.Right),
-                (Direction.Left, Modifier.None) when IsPushingLeft => (true, Direction.Left),
-                (Direction.Up, Modifier.None) when IsPushingUp => (true, Direction.Up),
-                (_, Modifier.None) when IsPushingNone => (true, Direction.None),
-                (_, Modifier.None) when IsAnyPushing => (true, Direction.Any),
-                _ => (false, Direction.None)
+
+                (Direction.Down, Modifier.None) when IsPushingDown =>
+                    (true, Direction.Down, Modifier.None),
+
+                (Direction.Right, Modifier.None) when IsPushingRight =>
+                    (true, Direction.Right, Modifier.None),
+
+                (Direction.Left, Modifier.None) when IsPushingLeft =>
+                    (true, Direction.Left, Modifier.None),
+
+                (Direction.Up, Modifier.None) when IsPushingUp =>
+                    (true, Direction.Up, Modifier.None),
+
+                (Direction.None, Modifier.None) when IsPushingNone =>
+                    (true, Direction.None, Modifier.None),
+
+                (Direction.Any, Modifier.None) when IsAnyPushing =>
+                    (true, Direction.Any, Modifier.None),
+                
+                (Direction.Down, Modifier.Shift) when IsPushingDown && IsPushingShift =>
+                    (true, Direction.Down, Modifier.Shift),
+
+                (Direction.Right, Modifier.Shift) when IsPushingRight && IsPushingShift =>
+                    (true, Direction.Right, Modifier.Shift),
+
+                (Direction.Left, Modifier.Shift) when IsPushingLeft && IsPushingShift =>
+                    (true, Direction.Left, Modifier.Shift),
+
+                (Direction.Up, Modifier.Shift) when IsPushingUp && IsPushingShift =>
+                    (true, Direction.Up, Modifier.Shift),
+
+                _ => (false, Direction.None, Modifier.None)
             };
         }
 
         public SpeederActionResult HandleMovement(Movement movement)
         {
-            var (fired, direction) = HandleMovementSwitch(movement.Direction, movement.Modifier);
+            var (fired, direction, modifier) = HandleMovementSwitch(movement.Direction, movement.Modifier);
 
             if (fired)
             {
-                var actionResult = new SpeederActionResult { Fired = true, Direction = direction };
+                var actionResult = new SpeederActionResult
+                {
+                    Fired = true,
+                    Direction = direction,
+                    Modifier = modifier
+                };
                 movement.Action();
                 return actionResult;
             }
@@ -98,7 +119,7 @@ namespace Player.SpeederInput
         public SpeederActionResult<T> HandleMovement<T>(Movement<T> movement)
         {
             var callable = movement.Action;
-            var (fired, direction) = HandleMovementSwitch(movement.Direction, movement.Modifier);
+            var (fired, direction, modifier) = HandleMovementSwitch(movement.Direction, movement.Modifier);
 
             if (fired)
             {
@@ -106,7 +127,8 @@ namespace Player.SpeederInput
                 {
                     Fired = true,
                     Result = callable(),
-                    Direction = direction
+                    Direction = direction,
+                    Modifier = modifier
                 };
                 return actionResult;
             }
@@ -116,11 +138,11 @@ namespace Player.SpeederInput
 
 
         // Runs all the actions until the first 
-        public SpeederActionResult<T> RunMovements<T>(List<Movement<T>> movements) =>
+        public SpeederActionResult<T> RunMovements<T>(IEnumerable<Movement<T>> movements) =>
             movements.Select(HandleMovement).FirstOrDefault(a => a.Fired);
 
         [CanBeNull]
-        public SpeederActionResult RunMovements(List<Movement> movements) =>
+        public SpeederActionResult RunMovements(IEnumerable<Movement> movements) =>
             movements.Select(HandleMovement).FirstOrDefault(a => a.Fired);
     }
 }
