@@ -103,27 +103,33 @@ public class GroundController : MonoBehaviour
 
         if (maxZPosition < Landspeeder.GetZPos() + verticalDistToGenNewPlane)
         {
-            // Generate the topmost of numPlanesWide new planes
-            for (int i = 0; i < numPlanesWide; i++) {
-                GenerateNewPlane(new Vector3(minXPosition + i * planeWidth, ground.transform.position.y, maxZPosition + planeLength));
+            // Generate a row of new planes (at maxZPosition + planeLength, with x positions from minXPosition to maxXPosition)
+            float currentX = minXPosition;
+            while(currentX < maxXPosition + planeWidth) {
+                GenerateNewPlane(new Vector3(currentX, ground.transform.position.y, maxZPosition + planeLength));
+                currentX += planeWidth;
             }
             UpdateMaxesAndMins();
         }
 
         if (maxXPosition < Landspeeder.GetXPos() + horizontalDistToGenNewPlane)
         {
-            // Generate the rightmost of numPlanesLong new planes
-            for (int i = 0; i < numPlanesLong; i++) {
-                GenerateNewPlane(new Vector3(maxXPosition + planeWidth, ground.transform.position.y, maxZPosition - i * planeLength));
+            // Generate a column of new planes (at maxXPosition + planeWidth, with z positions from 0 to maxZPosition)
+            float currentZ = maxZPosition;
+            while(currentZ > -planeLength) {
+                GenerateNewPlane(new Vector3(maxXPosition + planeWidth, ground.transform.position.y, currentZ));
+                currentZ -= planeLength;
             }
             UpdateMaxesAndMins();
         }
 
         if (minXPosition > Landspeeder.GetXPos() - horizontalDistToGenNewPlane)
         {
-            // Generate the leftmost of numPlanesLong new planes
-            for (int i = 0; i < numPlanesLong; i++) {
-                GenerateNewPlane(new Vector3(minXPosition - planeWidth, ground.transform.position.y, maxZPosition - i * planeLength));
+            // Generate a column of new planes (at minXPosition - planeWidth, with z positions from 0 to maxZPosition)
+            float currentZ = maxZPosition;
+            while(currentZ > -planeLength) {
+                GenerateNewPlane(new Vector3(minXPosition - planeWidth, ground.transform.position.y, currentZ));
+                currentZ -= planeLength;
             }
             UpdateMaxesAndMins();
         }
@@ -131,6 +137,7 @@ public class GroundController : MonoBehaviour
 
     private void GenerateNewPlane(Vector3 position)
     {
+        print("Generating new plane at " + position.ToString());
         GameObject currentPlane = Instantiate(ground, position, Quaternion.identity);
         currentPlane.transform.SetParent(transform);
         FillGround(currentPlane);
