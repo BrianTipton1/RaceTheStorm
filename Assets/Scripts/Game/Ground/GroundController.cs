@@ -24,11 +24,11 @@ public class GroundController : MonoBehaviour
     [SerializeField]
     public SizeTuple[] obstacleSizeRanges;
 
-    public float verticalDistToGenNewPlane=500f;
-    public float horizontalDistToGenNewPlane=250f;
-    public float forwardSpeed=50f;
+    public float verticalDistToGenNewPlane = 500f;
+    public float horizontalDistToGenNewPlane = 250f;
+    public float forwardSpeed = 50f;
     public float sidewaysSpeed = 15f;
-    
+
     public float destroyDistance = 100f;
     public int numPlanesWide = 4;
     public int numPlanesLong = 2;
@@ -61,9 +61,11 @@ public class GroundController : MonoBehaviour
         }
 
         // Instantiate the first numPlanesLong * numPlanesWide ground objects to start the game
-        for (int i = 0; i < numPlanesLong; i++) {
-            for (int j = 0; j < numPlanesWide; j++) {
-                Vector3 newPosition = new Vector3((j-Mathf.Floor(numPlanesWide/2)) * planeWidth + planeWidth / 2, ground.transform.position.y, i * planeLength);
+        for (int i = 0; i < numPlanesLong; i++)
+        {
+            for (int j = 0; j < numPlanesWide; j++)
+            {
+                Vector3 newPosition = new Vector3((j - Mathf.Floor(numPlanesWide / 2)) * planeWidth + planeWidth / 2, ground.transform.position.y, i * planeLength);
                 GameObject currentPlane = Instantiate(ground, newPosition, Quaternion.identity);
                 currentPlane.transform.SetParent(transform);
                 grounds.Add(currentPlane);
@@ -83,8 +85,10 @@ public class GroundController : MonoBehaviour
 
         List<GameObject> toRemove = new List<GameObject>();
 
-        foreach (GameObject ground in grounds) {
-            if (ground == null) {
+        foreach (GameObject ground in grounds)
+        {
+            if (ground == null)
+            {
                 continue;
             }
             ground.transform.Translate(totalMovement);
@@ -95,7 +99,8 @@ public class GroundController : MonoBehaviour
             }
         }
 
-        foreach (GameObject ground in toRemove) {
+        foreach (GameObject ground in toRemove)
+        {
             grounds.Remove(ground);
         }
 
@@ -105,7 +110,8 @@ public class GroundController : MonoBehaviour
         {
             // Generate a row of new planes (at maxZPosition + planeLength, with x positions from minXPosition to maxXPosition)
             float currentX = minXPosition;
-            while(currentX < maxXPosition + planeWidth) {
+            while (currentX < maxXPosition + planeWidth)
+            {
                 GenerateNewPlane(new Vector3(currentX, ground.transform.position.y, maxZPosition + planeLength));
                 currentX += planeWidth;
             }
@@ -116,7 +122,8 @@ public class GroundController : MonoBehaviour
         {
             // Generate a column of new planes (at maxXPosition + planeWidth, with z positions from 0 to maxZPosition)
             float currentZ = maxZPosition;
-            while(currentZ > -planeLength) {
+            while (currentZ > -planeLength)
+            {
                 GenerateNewPlane(new Vector3(maxXPosition + planeWidth, ground.transform.position.y, currentZ));
                 currentZ -= planeLength;
             }
@@ -127,7 +134,8 @@ public class GroundController : MonoBehaviour
         {
             // Generate a column of new planes (at minXPosition - planeWidth, with z positions from 0 to maxZPosition)
             float currentZ = maxZPosition;
-            while(currentZ > -planeLength) {
+            while (currentZ > -planeLength)
+            {
                 GenerateNewPlane(new Vector3(minXPosition - planeWidth, ground.transform.position.y, currentZ));
                 currentZ -= planeLength;
             }
@@ -171,13 +179,15 @@ public class GroundController : MonoBehaviour
         }
     }
 
-    private void UpdateMaxesAndMins() {
+    private void UpdateMaxesAndMins()
+    {
         maxZPosition = float.MinValue;
         maxXPosition = float.MinValue;
         minXPosition = float.MaxValue;
 
-        foreach (GameObject ground in grounds) {
-            if (ground == null) {continue;}
+        foreach (GameObject ground in grounds)
+        {
+            if (ground == null) { continue; }
             maxZPosition = Mathf.Max(maxZPosition, ground.transform.position.z);
             maxXPosition = Mathf.Max(maxXPosition, ground.transform.position.x);
             minXPosition = Mathf.Min(minXPosition, ground.transform.position.x);

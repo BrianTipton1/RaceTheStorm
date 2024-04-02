@@ -8,6 +8,7 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 using Direction = Player.SpeederInput.Controller.Direction;
 using Modifier = Player.SpeederInput.Controller.Modifier;
+using Game;
 
 namespace Player
 {
@@ -31,6 +32,7 @@ namespace Player
 
         public float jumpHeight = 5f;
         public float jumpDuration = 1f;
+        public string endSceneName = "End";
 
         void Awake()
         {
@@ -343,7 +345,10 @@ namespace Player
             {
                 parent = parent.parent;
             }
-            if(parent) Destroy(parent.gameObject);
+            if (parent) Destroy(parent.gameObject);
+
+            // Call the EndGame method from the GameSceneManager
+            GameSceneManager.S.EndGame();
         }
     }
 }
