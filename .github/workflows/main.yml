@@ -1,4 +1,4 @@
-name: Actions 😎
+name: Build & Deploy to Github Pages
 
 on: [push, pull_request]
 
@@ -55,3 +55,28 @@ jobs:
         with:
           name: Build
           path: build
+          
+  deploy:
+    name: Deploy to release branch
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: release
+          fetch-depth: 0
+
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: Build
+          path: build
+
+      - name: Commit and push
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add -f build
+          git commit -m "Deploying build to release"
+          git push origin release
