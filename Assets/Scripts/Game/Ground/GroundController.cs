@@ -3,6 +3,7 @@ using uRandom = UnityEngine.Random;
 using System.Collections.Generic;
 using System;
 using Player;
+using Game;
 
 [Serializable]
 public class SizeTuple
@@ -31,7 +32,7 @@ public class GroundController : MonoBehaviour
 
     public float destroyDistance = 100f;
     public int numPlanesWide = 4;
-    public int numPlanesLong = 2;
+    public int numPlanesLong = 2; // Indicates number of planes per level (+1 for blank plane at start)
 
     public float planeLength = 2000f;
     public float planeWidth = 500f;
@@ -39,6 +40,7 @@ public class GroundController : MonoBehaviour
     private float maxZPosition, minXPosition, maxXPosition;
     private List<GameObject> grounds = new List<GameObject>();
     private Dictionary<string, int> gameObjectCounts;
+    private int curPlanesGenerated = 0;
 
     void Awake()
     {
@@ -66,11 +68,10 @@ public class GroundController : MonoBehaviour
             for (int j = 0; j < numPlanesWide; j++)
             {
                 Vector3 newPosition = new Vector3((j - Mathf.Floor(numPlanesWide / 2)) * planeWidth + planeWidth / 2, ground.transform.position.y, i * planeLength);
-                GameObject currentPlane = Instantiate(ground, newPosition, Quaternion.identity);
-                currentPlane.transform.SetParent(transform);
-                grounds.Add(currentPlane);
-                FillGround(currentPlane);
+                GenerateNewPlane(newPosition, i != 0);
             }
+            if (i == 0) continue;
+            curPlanesGenerated++;
         }
 
         UpdateMaxesAndMins();
@@ -79,8 +80,8 @@ public class GroundController : MonoBehaviour
     void Update()
     {
         float horizontalInput = Input.GetAxis("Horizontal");
-        Vector3 forwardMovement = Vector3.back * (forwardSpeed * Time.deltaTime);
-        Vector3 horizontalMovement = Vector3.right * (-horizontalInput * sidewaysSpeed * Time.deltaTime);
+        Vector3 forwardMovement = Vector3.back * (forwardSpeed * Time.deltaTime * OverlayManager.S.GetSpeedMultiplier());
+        Vector3 horizontalMovement = Vector3.right * (-horizontalInput * sidewaysSpeed * Time.deltaTime * OverlayManager.S.GetSpeedMultiplier());
         Vector3 totalMovement = forwardMovement + horizontalMovement;
 
         List<GameObject> toRemove = new List<GameObject>();
@@ -108,24 +109,43 @@ public class GroundController : MonoBehaviour
 
         if (maxZPosition < Landspeeder.GetZPos() + verticalDistToGenNewPlane)
         {
+            // When we generate a new level, see if curPlanesGenerated == numPlanesLong, if so generate blank row.
+            bool fillGround = curPlanesGenerated != numPlanesLong;
+            if (fillGround)
+            {
+                curPlanesGenerated++;
+            }
+            else
+            {
+                curPlanesGenerated = 0;
+            }
+
             // Generate a row of new planes (at maxZPosition + planeLength, with x positions from minXPosition to maxXPosition)
             float currentX = minXPosition;
             while (currentX < maxXPosition + planeWidth)
             {
-                GenerateNewPlane(new Vector3(currentX, ground.transform.position.y, maxZPosition + planeLength));
+                GenerateNewPlane(new Vector3(currentX, ground.transform.position.y, maxZPosition + planeLength), fillGround);
                 currentX += planeWidth;
             }
+
             UpdateMaxesAndMins();
         }
 
         if (maxXPosition < Landspeeder.GetXPos() + horizontalDistToGenNewPlane)
         {
             // Generate a column of new planes (at maxXPosition + planeWidth, with z positions from 0 to maxZPosition)
+            // curPlanesGenerated is the index of the farthest row generated
             float currentZ = maxZPosition;
+            int tmpCurPlaneInd = curPlanesGenerated;
             while (currentZ > -planeLength)
             {
-                GenerateNewPlane(new Vector3(maxXPosition + planeWidth, ground.transform.position.y, currentZ));
+                GenerateNewPlane(new Vector3(maxXPosition + planeWidth, ground.transform.position.y, currentZ), tmpCurPlaneInd != 0);
                 currentZ -= planeLength;
+                tmpCurPlaneInd -= 1;
+                if (tmpCurPlaneInd < 0)
+                {
+                    tmpCurPlaneInd = numPlanesLong;
+                }
             }
             UpdateMaxesAndMins();
         }
@@ -133,22 +153,38 @@ public class GroundController : MonoBehaviour
         if (minXPosition > Landspeeder.GetXPos() - horizontalDistToGenNewPlane)
         {
             // Generate a column of new planes (at minXPosition - planeWidth, with z positions from 0 to maxZPosition)
+            // curPlanesGenerated is the index of the farthest row generated
             float currentZ = maxZPosition;
+            int tmpCurPlaneInd = curPlanesGenerated;
             while (currentZ > -planeLength)
             {
-                GenerateNewPlane(new Vector3(minXPosition - planeWidth, ground.transform.position.y, currentZ));
+                GenerateNewPlane(new Vector3(minXPosition - planeWidth, ground.transform.position.y, currentZ), tmpCurPlaneInd != 0);
                 currentZ -= planeLength;
+                tmpCurPlaneInd -= 1;
+                if (tmpCurPlaneInd < 0)
+                {
+                    tmpCurPlaneInd = numPlanesLong;
+                }
             }
             UpdateMaxesAndMins();
         }
     }
 
-    private void GenerateNewPlane(Vector3 position)
+    private void GenerateNewPlane(Vector3 position, bool fillGround = true)
     {
+        // Round each X, Y, Z position to integer values (prevent floating point errors)
+        position.x = Mathf.Floor(position.x);
+        position.y = Mathf.Floor(position.y);
+        position.z = Mathf.Floor(position.z);
+
         print("Generating new plane at " + position.ToString());
         GameObject currentPlane = Instantiate(ground, position, Quaternion.identity);
         currentPlane.transform.SetParent(transform);
-        FillGround(currentPlane);
+
+        if (fillGround)
+        {
+            FillGround(currentPlane);
+        }
         grounds.Add(currentPlane);
     }
 

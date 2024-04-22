@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using End;
 using Start;
-using TMPro;
 
 namespace Game
 {
@@ -26,10 +25,6 @@ namespace Game
             }
         }
 
-        [SerializeField]
-        public GameObject currentScoreGO;
-        public string currentScoreTemplate = "Current Score: {0}pts";
-
         public static string sceneName
         {
             get
@@ -38,9 +33,9 @@ namespace Game
             }
         }
 
-        private float startTime;
+        public static float startTime;
+
         private GameObject pauseMenu;
-        private TextMeshProUGUI currentScoreText;
 
         void Awake()
         {
@@ -61,14 +56,6 @@ namespace Game
 
             pauseMenu = GameObject.Find("PauseMenu");
             pauseMenu.SetActive(false);
-
-            currentScoreText = currentScoreGO.GetComponent<TextMeshProUGUI>();
-            currentScoreText.text = string.Format(currentScoreTemplate, 0);
-        }
-
-        void Update()
-        {
-            currentScoreText.text = string.Format(currentScoreTemplate, Mathf.RoundToInt(Time.time - startTime));
         }
 
         public void EndGame()
