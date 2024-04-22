@@ -177,7 +177,7 @@ public class GroundController : MonoBehaviour
         position.y = Mathf.Floor(position.y);
         position.z = Mathf.Floor(position.z);
 
-        print("Generating new plane at " + position.ToString());
+        // print("Generating new plane at " + position.ToString());
         GameObject currentPlane = Instantiate(ground, position, Quaternion.identity);
         currentPlane.transform.SetParent(transform);
 
@@ -204,7 +204,10 @@ public class GroundController : MonoBehaviour
         float y = ground.transform.position.y;
         for (int i = 0; i < obstacles.Length; i++)
         {
+            // Adjust the obstacle max the level offset
             int max = maxPerObstacle[i];
+            max = (int)OverlayManager.S.GetObstacleMultiplier() * max;
+
             for (int j = 0; j < max; j++)
             {
                 GameObject newObstacle = MakeNewObstacle(x, y, z, obstacles[i]);

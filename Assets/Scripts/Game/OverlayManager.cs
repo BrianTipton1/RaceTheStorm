@@ -105,6 +105,11 @@ namespace Game
             return 1 + (currentLevel * 0.2f);
         }
 
+        public float GetObstacleMultiplier()
+        {
+            return 1 + (currentLevel * 0.4f);
+        }
+
         private IEnumerator HideLevelText()
         {
             yield return new WaitForSeconds(3);

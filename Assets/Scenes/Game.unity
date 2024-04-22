@@ -717,7 +717,7 @@ MonoBehaviour:
   - {fileID: 4964421129367177157, guid: a17730322d4686a44a5d4a5437e47dc7, type: 3}
   - {fileID: 7140699586949714305, guid: 8ff072447b9b15c4584549ee9ffc30e9, type: 3}
   - {fileID: 4599182415954928998, guid: 06bf7bc85d06f284a8bb4743c9f62e21, type: 3}
-  maxPerObstacle: 04000000070000000700000007000000
+  maxPerObstacle: 03000000050000000500000005000000
   obstacleSizeRanges:
   - min: 1
     max: 1
@@ -1501,7 +1501,6 @@ MonoBehaviour:
   currentLevelGO: {fileID: 1052382006}
   currentScoreTemplate: 'Score: {0}pts'
   currentLevelTemplate: 'Level: {0}'
-  currentLevel: 0
   numFramesBetweenCheck: 100
 --- !u!1 &1447565045
 GameObject:
