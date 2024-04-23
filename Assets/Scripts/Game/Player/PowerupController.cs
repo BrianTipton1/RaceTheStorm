@@ -14,6 +14,7 @@ namespace Game.Player
         public float boostMultiplier = 2f;
         public float boostDuration = 2f;
         public bool IsBoosting = false;
+        public static int numPowerupsGathered = 0;
 
         public enum T
         {
@@ -32,6 +33,7 @@ namespace Game.Player
             {
                 Destroy(gameObject);
             }
+            numPowerupsGathered = 0;
         }
 
         private void Update()
@@ -52,9 +54,12 @@ namespace Game.Player
 
         public void SetNewPowerup()
         {
-            IsBoosting = true;
-            StartCoroutine(Boost());
-            IsBoosting = false;
+            numPowerupsGathered++;
+            if (!IsBoosting)
+            {
+                IsBoosting = true;
+                StartCoroutine(Boost());
+            }
         }
 
         IEnumerator Boost()
@@ -62,7 +67,8 @@ namespace Game.Player
             float originalSpeed = _groundController.forwardSpeed;
             _groundController.forwardSpeed *= boostMultiplier;
             yield return new WaitForSeconds(boostDuration);
-            _groundController.forwardSpeed = originalSpeed * 1.05f;
+            _groundController.forwardSpeed = originalSpeed * 1.01f;
+            IsBoosting = false;
         }
     }
 }

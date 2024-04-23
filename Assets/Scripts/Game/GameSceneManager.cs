@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using End;
 using Start;
+using Game.Player;
 
 namespace Game
 {
@@ -60,7 +61,7 @@ namespace Game
 
         public void EndGame()
         {
-            EndScore.prevScore = Mathf.RoundToInt(Time.time - startTime);
+            EndScore.prevScore = Mathf.RoundToInt(Time.time - startTime) + PowerupController.numPowerupsGathered * 5;
             SceneManager.LoadScene(EndSceneManager.sceneName);
         }
 

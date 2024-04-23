@@ -36,14 +36,20 @@ namespace Game
         public GameObject currentScoreGO;
         [SerializeField]
         public GameObject currentLevelGO;
+        [SerializeField]
+        public GameObject tornadoDistanceGO;
         public string currentScoreTemplate = "Current Score: {0}pts";
         public string currentLevelTemplate = "Level: {0}";
+        public string tornadoDistanceTemplate = "{0}m away";
         public static int currentLevel = 0;
         public int numFramesBetweenCheck = 100;
+        public int startingTornadoDistance = 500;
 
         private TextMeshProUGUI currentScoreText;
         private TextMeshProUGUI currentLevelText;
+        private TextMeshProUGUI tornadoDistanceText;
         private int dummyFrameCount = 0;
+        private int frameIndex = 0;
         private LevelOverlayStatus levelOverlayStatus = LevelOverlayStatus.NOT_SHOWN;
 
         void Awake()
@@ -63,14 +69,17 @@ namespace Game
             currentLevel = 0;
             currentScoreText = currentScoreGO.GetComponent<TextMeshProUGUI>();
             currentScoreText.text = string.Format(currentScoreTemplate, 0);
+
             currentLevelText = currentLevelGO.GetComponent<TextMeshProUGUI>();
             currentLevelGO.SetActive(false);
+
+            tornadoDistanceText = tornadoDistanceGO.GetComponent<TextMeshProUGUI>();
         }
 
-        void Update()
+        void FixedUpdate()
         {
             // Update the current score
-            currentScoreText.text = string.Format(currentScoreTemplate, Mathf.RoundToInt(Time.time - GameSceneManager.startTime));
+            currentScoreText.text = string.Format(currentScoreTemplate, Mathf.RoundToInt(Time.time - GameSceneManager.startTime) + PowerupController.numPowerupsGathered * 5);
 
             // Check if the player is on a blank plane, if so, show the level (every numFramesBetweenCheck frames)
             if (dummyFrameCount % numFramesBetweenCheck == 0)
@@ -99,6 +108,25 @@ namespace Game
                 dummyFrameCount = 0;
             }
             dummyFrameCount++;
+
+            // Decrement the storm's distance by 1 (so it gets closer) unless origForwardSpeed < forwardSpeed
+            if (PowerupController.Instance.IsBoosting)
+            {
+                startingTornadoDistance += 1;
+            }
+            else if (frameIndex % 2 == 0)
+            {
+                frameIndex = 0;
+                startingTornadoDistance -= 1;
+            }
+            frameIndex++;
+
+            // If the tornado has reached the player, end the game
+            if (startingTornadoDistance < 0)
+            {
+                GameSceneManager.S.EndGame();
+            }
+            tornadoDistanceText.text = string.Format(tornadoDistanceTemplate, startingTornadoDistance);
         }
 
         public float GetSpeedMultiplier()
@@ -110,7 +138,7 @@ namespace Game
         {
             return 1 + (currentLevel * 0.4f);
         }
-        
+
         public float GetPowerupMultiplier()
         {
             return 1 + (currentLevel * 2f);

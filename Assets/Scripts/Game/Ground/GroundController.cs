@@ -222,9 +222,8 @@ public class GroundController : MonoBehaviour
             int max = maxPerObstacle[i];
             max = (int)OverlayManager.S.GetObstacleMultiplier() * max;
 
-            int maxPowerups =
-                (int)OverlayManager.S.GetPowerupMultiplier() *
-                max; /// IDK these numbers seems to work good enough for both 🤷
+            int maxPowerups = Mathf.Min(5, (int)OverlayManager.S.GetPowerupMultiplier() * max);
+
             for (int j = 0; j < maxPowerups; j++)
             {
                 GameObject newPowerup = MakeNewEntity(x, y + 4, z, powerup);
