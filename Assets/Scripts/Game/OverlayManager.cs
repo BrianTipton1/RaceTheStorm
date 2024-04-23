@@ -79,7 +79,7 @@ namespace Game
         void FixedUpdate()
         {
             // Update the current score
-            currentScoreText.text = string.Format(currentScoreTemplate, Mathf.RoundToInt(Time.time - GameSceneManager.startTime) + PowerupController.numPowerupsGathered * 5);
+            currentScoreText.text = string.Format(currentScoreTemplate, Mathf.RoundToInt(Time.time - GameSceneManager.startTime) + BoostController.numPowerupsGathered * 5);
 
             // Check if the player is on a blank plane, if so, show the level (every numFramesBetweenCheck frames)
             if (dummyFrameCount % numFramesBetweenCheck == 0)
@@ -110,7 +110,7 @@ namespace Game
             dummyFrameCount++;
 
             // Decrement the storm's distance by 1 (so it gets closer) unless origForwardSpeed < forwardSpeed
-            if (PowerupController.Instance.IsBoosting)
+            if (BoostController.Instance.IsBoosting)
             {
                 startingTornadoDistance += 1;
             }

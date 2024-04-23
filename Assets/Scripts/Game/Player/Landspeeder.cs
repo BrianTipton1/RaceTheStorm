@@ -338,7 +338,7 @@ namespace Game.Player
             // Keep going up the hierarchy until we find a parent with an "Obstacle" tag
             if (other.transform.tag == "Powerup")
             {
-                PowerupController.Instance.SetNewPowerup();
+                BoostController.Instance.Boost();
                 Destroy(other.gameObject);
                 return;
             }

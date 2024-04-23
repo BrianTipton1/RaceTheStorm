@@ -61,7 +61,7 @@ namespace Game
 
         public void EndGame()
         {
-            EndScore.prevScore = Mathf.RoundToInt(Time.time - startTime) + PowerupController.numPowerupsGathered * 5;
+            EndScore.prevScore = Mathf.RoundToInt(Time.time - startTime) + BoostController.numPowerupsGathered * 5;
             SceneManager.LoadScene(EndSceneManager.sceneName);
         }
 
