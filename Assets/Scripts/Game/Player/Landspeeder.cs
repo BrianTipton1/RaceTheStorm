@@ -48,20 +48,9 @@ namespace Game.Player
 
         void Update()
         {
-            /// These are just placeholders to showcase functionality
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                DoABarrelRoll(1);
-            }
-
-            if (Input.GetKeyDown(KeyCode.J) && !IsJumping)
+            if (Input.GetKeyDown(KeyCode.Space) && !IsJumping)
             {
                 Jump();
-            }
-
-            if (Input.GetKeyDown(KeyCode.R) && !Transform.IsReplaying)
-            {
-                Transform.Replay(Transform.GetMotionsNFramesBack(250), true);
             }
 
             _controller.RunMovements(UnModifiedMovements());
@@ -342,12 +331,13 @@ namespace Game.Player
                 Destroy(other.gameObject);
                 return;
             }
-            
+
             Transform parent = other.transform;
             while (parent != null && parent.tag != "Obstacle")
             {
                 parent = parent.parent;
             }
+
             if (parent) Destroy(parent.gameObject);
 
             // Call the EndGame method from the GameSceneManager
