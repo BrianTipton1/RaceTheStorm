@@ -98,12 +98,7 @@ namespace Game.Player
         {
             float originalSpeedForward = parentSpeedForward ?? _groundController.forwardSpeed;
             float originalSpeedSideways = parentSpeedSideways ?? _groundController.sidewaysSpeed;
-            float totalMultiplier = 1f;
-
-            foreach (var boost in boosts)
-            {
-                totalMultiplier *= boost == TBoost.Regular ? regBoostMultiplier : barrelBoostMultiplier;
-            }
+            float totalMultiplier = boosts[0] == TBoost.Regular ? regBoostMultiplier : barrelBoostMultiplier;
 
             _groundController.forwardSpeed = originalSpeedForward * totalMultiplier;
             _groundController.sidewaysSpeed = originalSpeedSideways * totalMultiplier;

@@ -222,7 +222,7 @@ public class GroundController : MonoBehaviour
             int max = maxPerObstacle[i];
             max = (int)OverlayManager.S.GetObstacleMultiplier() * max;
 
-            int maxPowerups = Mathf.Min(5, (int)OverlayManager.S.GetPowerupMultiplier() * max);
+            int maxPowerups = Mathf.Min(3, (int)OverlayManager.S.GetPowerupMultiplier() * max);
 
             for (int j = 0; j < maxPowerups; j++)
             {
