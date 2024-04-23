@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Landspeeder
   - Obstacle
+  - Powerup
   layers:
   - Default
   - TransparentFX

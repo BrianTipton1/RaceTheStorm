@@ -2,8 +2,10 @@ using UnityEngine;
 using uRandom = UnityEngine.Random;
 using System.Collections.Generic;
 using System;
+using System.Collections;
 using Player;
 using Game;
+using Game.Player;
 
 [Serializable]
 public class SizeTuple
@@ -16,14 +18,14 @@ public class GroundController : MonoBehaviour
 {
     public static GroundController Instance { get; private set; }
 
-    [Header("Set in Inspector")]
-    public GameObject ground;
+    [Header("Set in Inspector")] public GameObject ground;
 
     public GameObject[] obstacles;
     public int[] maxPerObstacle;
 
-    [SerializeField]
-    public SizeTuple[] obstacleSizeRanges;
+    public GameObject powerup;
+
+    [SerializeField] public SizeTuple[] obstacleSizeRanges;
 
     public float verticalDistToGenNewPlane = 500f;
     public float horizontalDistToGenNewPlane = 250f;
@@ -67,9 +69,11 @@ public class GroundController : MonoBehaviour
         {
             for (int j = 0; j < numPlanesWide; j++)
             {
-                Vector3 newPosition = new Vector3((j - Mathf.Floor(numPlanesWide / 2)) * planeWidth + planeWidth / 2, ground.transform.position.y, i * planeLength);
+                Vector3 newPosition = new Vector3((j - Mathf.Floor(numPlanesWide / 2)) * planeWidth + planeWidth / 2,
+                    ground.transform.position.y, i * planeLength);
                 GenerateNewPlane(newPosition, i != 0);
             }
+
             if (i == 0) continue;
             curPlanesGenerated++;
         }
@@ -80,8 +84,11 @@ public class GroundController : MonoBehaviour
     void Update()
     {
         float horizontalInput = Input.GetAxis("Horizontal");
-        Vector3 forwardMovement = Vector3.back * (forwardSpeed * Time.deltaTime * OverlayManager.S.GetSpeedMultiplier());
-        Vector3 horizontalMovement = Vector3.right * (-horizontalInput * sidewaysSpeed * Time.deltaTime * OverlayManager.S.GetSpeedMultiplier());
+        Vector3 forwardMovement =
+            Vector3.back * (forwardSpeed * Time.deltaTime * OverlayManager.S.GetSpeedMultiplier());
+        Vector3 horizontalMovement = Vector3.right *
+                                     (-horizontalInput * sidewaysSpeed * Time.deltaTime *
+                                      OverlayManager.S.GetSpeedMultiplier());
         Vector3 totalMovement = forwardMovement + horizontalMovement;
 
         List<GameObject> toRemove = new List<GameObject>();
@@ -92,6 +99,7 @@ public class GroundController : MonoBehaviour
             {
                 continue;
             }
+
             ground.transform.Translate(totalMovement);
             if (ground.transform.position.z + planeLength / 2 < Landspeeder.GetZPos() - verticalDistToGenNewPlane)
             {
@@ -124,7 +132,8 @@ public class GroundController : MonoBehaviour
             float currentX = minXPosition;
             while (currentX < maxXPosition + planeWidth)
             {
-                GenerateNewPlane(new Vector3(currentX, ground.transform.position.y, maxZPosition + planeLength), fillGround);
+                GenerateNewPlane(new Vector3(currentX, ground.transform.position.y, maxZPosition + planeLength),
+                    fillGround);
                 currentX += planeWidth;
             }
 
@@ -139,7 +148,8 @@ public class GroundController : MonoBehaviour
             int tmpCurPlaneInd = curPlanesGenerated;
             while (currentZ > -planeLength)
             {
-                GenerateNewPlane(new Vector3(maxXPosition + planeWidth, ground.transform.position.y, currentZ), tmpCurPlaneInd != 0);
+                GenerateNewPlane(new Vector3(maxXPosition + planeWidth, ground.transform.position.y, currentZ),
+                    tmpCurPlaneInd != 0);
                 currentZ -= planeLength;
                 tmpCurPlaneInd -= 1;
                 if (tmpCurPlaneInd < 0)
@@ -147,6 +157,7 @@ public class GroundController : MonoBehaviour
                     tmpCurPlaneInd = numPlanesLong;
                 }
             }
+
             UpdateMaxesAndMins();
         }
 
@@ -158,7 +169,8 @@ public class GroundController : MonoBehaviour
             int tmpCurPlaneInd = curPlanesGenerated;
             while (currentZ > -planeLength)
             {
-                GenerateNewPlane(new Vector3(minXPosition - planeWidth, ground.transform.position.y, currentZ), tmpCurPlaneInd != 0);
+                GenerateNewPlane(new Vector3(minXPosition - planeWidth, ground.transform.position.y, currentZ),
+                    tmpCurPlaneInd != 0);
                 currentZ -= planeLength;
                 tmpCurPlaneInd -= 1;
                 if (tmpCurPlaneInd < 0)
@@ -166,6 +178,7 @@ public class GroundController : MonoBehaviour
                     tmpCurPlaneInd = numPlanesLong;
                 }
             }
+
             UpdateMaxesAndMins();
         }
     }
@@ -185,10 +198,11 @@ public class GroundController : MonoBehaviour
         {
             FillGround(currentPlane);
         }
+
         grounds.Add(currentPlane);
     }
 
-    private GameObject MakeNewObstacle(float x, float y, float z, GameObject prefab)
+    private GameObject MakeNewEntity(float x, float y, float z, GameObject prefab)
     {
         float xPosition = uRandom.Range(x - planeWidth / 2, x + planeWidth / 2);
         float zPosition = uRandom.Range(z - planeLength / 2, z + planeLength / 2);
@@ -208,13 +222,32 @@ public class GroundController : MonoBehaviour
             int max = maxPerObstacle[i];
             max = (int)OverlayManager.S.GetObstacleMultiplier() * max;
 
+            int maxPowerups =
+                (int)OverlayManager.S.GetPowerupMultiplier() *
+                max; /// IDK these numbers seems to work good enough for both 🤷
+            for (int j = 0; j < maxPowerups; j++)
+            {
+                GameObject newPowerup = MakeNewEntity(x, y + 4, z, powerup);
+                newPowerup.transform.SetParent(ground.transform);
+                StartCoroutine(RotatePowerup(newPowerup));
+            }
+
             for (int j = 0; j < max; j++)
             {
-                GameObject newObstacle = MakeNewObstacle(x, y, z, obstacles[i]);
+                GameObject newObstacle = MakeNewEntity(x, y, z, obstacles[i]);
                 float scale = uRandom.Range(obstacleSizeRanges[i].min, obstacleSizeRanges[i].max);
                 newObstacle.transform.localScale = newObstacle.transform.localScale * scale;
                 newObstacle.transform.SetParent(ground.transform);
             }
+        }
+    }
+
+    IEnumerator RotatePowerup(GameObject powerup)
+    {
+        while (powerup != null)
+        {
+            powerup.transform.Rotate(0, 50 * Time.deltaTime, 0);
+            yield return null;
         }
     }
 
@@ -226,7 +259,11 @@ public class GroundController : MonoBehaviour
 
         foreach (GameObject ground in grounds)
         {
-            if (ground == null) { continue; }
+            if (ground == null)
+            {
+                continue;
+            }
+
             maxZPosition = Mathf.Max(maxZPosition, ground.transform.position.z);
             maxXPosition = Mathf.Max(maxXPosition, ground.transform.position.x);
             minXPosition = Mathf.Min(minXPosition, ground.transform.position.x);

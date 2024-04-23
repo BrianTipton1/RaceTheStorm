@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Game.Player;
 using UnityEngine;
 using TMPro;
 using Player;
@@ -108,6 +109,11 @@ namespace Game
         public float GetObstacleMultiplier()
         {
             return 1 + (currentLevel * 0.4f);
+        }
+        
+        public float GetPowerupMultiplier()
+        {
+            return 1 + (currentLevel * 2f);
         }
 
         private IEnumerator HideLevelText()

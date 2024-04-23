@@ -1,21 +1,17 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Player.Motion;
 using Player.SpeederInput;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using Direction = Player.SpeederInput.Controller.Direction;
 using Modifier = Player.SpeederInput.Controller.Modifier;
-using Game;
 
-namespace Player
+namespace Game.Player
 {
     public class Landspeeder : MonoBehaviour
     {
         public static Landspeeder Instance { get; private set; }
-
         private SpeederTransform Transform => SpeederTransform.Instance;
 
         private readonly Controller _controller = Controller.Instance;
@@ -340,6 +336,13 @@ namespace Player
         void OnCollisionEnter(Collision other)
         {
             // Keep going up the hierarchy until we find a parent with an "Obstacle" tag
+            if (other.transform.tag == "Powerup")
+            {
+                PowerupController.Instance.SetNewPowerup();
+                Destroy(other.gameObject);
+                return;
+            }
+            
             Transform parent = other.transform;
             while (parent != null && parent.tag != "Obstacle")
             {
