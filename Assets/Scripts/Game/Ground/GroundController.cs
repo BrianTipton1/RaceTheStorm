@@ -130,13 +130,12 @@ public class GroundController : MonoBehaviour
 
             // Generate a row of new planes (at maxZPosition + planeLength, with x positions from minXPosition to maxXPosition)
             float currentX = minXPosition;
-            while (currentX < maxXPosition + planeWidth)
+            while (currentX < maxXPosition + 10)
             {
                 GenerateNewPlane(new Vector3(currentX, ground.transform.position.y, maxZPosition + planeLength),
                     fillGround);
                 currentX += planeWidth;
             }
-
             UpdateMaxesAndMins();
         }
 

@@ -64,10 +64,26 @@ namespace Game
             audioSource.Play();
         }
 
-        void Update(){
-            if (!audioSource.isPlaying){
-                if(pauseMenu.activeSelf == false){
+        void Update()
+        {
+            if (!audioSource.isPlaying)
+            {
+                if (pauseMenu.activeSelf == false)
+                {
                     audioSource.Play();
+                }
+            }
+
+            // Open the pause menu if the player presses the escape key
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                if (Time.timeScale == 0)
+                {
+                    ResumeGame();
+                }
+                else
+                {
+                    PauseGame();
                 }
             }
         }
