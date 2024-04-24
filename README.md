@@ -7,8 +7,9 @@ This project pulls inspiration from the game [*Race the Sun*](https://store.stea
 1. Open the project in Unity.
 2. Navigate to the `Scenes` folder in the project.
 3. Open the `Start` scene.
-4. Press the play button in the Unity Editor.
-5. Read over the controls and instructions, then press the `Play` button to begin the game.
+4. Ensure display is set to `16:9` aspect ratio.
+5. Press the play button in the Unity Editor.
+6. Read over the controls and instructions, then press the `Play` button to begin the game.
 
 ## References
 - [Race the Sun](https://store.steampowered.com/app/253030/Race_The_Sun/)
