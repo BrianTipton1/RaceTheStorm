@@ -11,6 +11,8 @@ namespace Game
     public class GameSceneManager : MonoBehaviour
     {
         private static GameSceneManager s;
+
+        private AudioSource audioSource;
         public static GameSceneManager S
         {
             get
@@ -57,6 +59,17 @@ namespace Game
 
             pauseMenu = GameObject.Find("PauseMenu");
             pauseMenu.SetActive(false);
+
+            audioSource = GetComponent<AudioSource>();
+            audioSource.Play();
+        }
+
+        void Update(){
+            if (!audioSource.isPlaying){
+                if(pauseMenu.activeSelf == false){
+                    audioSource.Play();
+                }
+            }
         }
 
         public void EndGame()
@@ -74,12 +87,14 @@ namespace Game
         {
             Time.timeScale = 0;
             pauseMenu.SetActive(true);
+            audioSource.Pause();
         }
 
         public void ResumeGame()
         {
             Time.timeScale = 1;
             pauseMenu.SetActive(false);
+            audioSource.Play();
         }
 
         public void SlowMotionGame()

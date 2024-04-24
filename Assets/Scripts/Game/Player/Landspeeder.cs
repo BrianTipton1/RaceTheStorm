@@ -30,6 +30,10 @@ namespace Game.Player
         public float jumpDuration = 1f;
         public string endSceneName = "End";
 
+        private AudioSource audioSource;
+        public AudioClip boostSound;
+        public AudioClip jumpSound;
+
         void Awake()
         {
             if (Instance == null)
@@ -44,6 +48,8 @@ namespace Game.Player
             _rb = GetComponent<Rigidbody>();
             _initialRotation = Transform.rotation;
             _targetRotation = _initialRotation;
+
+            audioSource = GetComponent<AudioSource>();
         }
 
         void Update()
@@ -192,6 +198,9 @@ namespace Game.Player
             Vector3 startPosition = Transform.position;
             float elapsedTime = 0f;
 
+            audioSource.clip = jumpSound;
+            audioSource.Play();
+
             Quaternion startRotation = Transform.rotation;
             Quaternion targetRotation = startRotation;
 
@@ -329,6 +338,10 @@ namespace Game.Player
             {
                 BoostController.Instance.Boost();
                 Destroy(other.gameObject);
+
+                audioSource.clip = boostSound;
+                audioSource.Play();
+
                 return;
             }
 
