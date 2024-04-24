@@ -226,10 +226,11 @@ public class GroundController : MonoBehaviour
 
             for (int j = 0; j < maxPowerups; j++)
             {
-                GameObject newPowerup = MakeNewEntity(x, y + 4, z, powerup);
+                GameObject newPowerup = MakeNewEntity(x, y + 3, z, powerup);
                 newPowerup.transform.SetParent(ground.transform);
                 StartCoroutine(RotatePowerup(newPowerup));
             }
+
 
             for (int j = 0; j < max; j++)
             {

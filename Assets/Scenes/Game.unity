@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641275, b: 0.5748172, a: 1}
+  m_IndirectSpecularColor: {r: 0.4465878, g: 0.4964224, b: 0.57482475, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -658,7 +658,7 @@ MonoBehaviour:
   - {fileID: 7140699586949714305, guid: 8ff072447b9b15c4584549ee9ffc30e9, type: 3}
   - {fileID: 4599182415954928998, guid: 06bf7bc85d06f284a8bb4743c9f62e21, type: 3}
   maxPerObstacle: 03000000050000000500000005000000
-  powerup: {fileID: 7523429527404871738, guid: f074bfde038ed909a98170855688928b, type: 3}
+  powerup: {fileID: 6744463432339415828, guid: 11a72cf50e89b81d4bf9215d665001f5, type: 3}
   obstacleSizeRanges:
   - min: 1
     max: 1
