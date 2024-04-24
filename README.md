@@ -3,6 +3,13 @@
 Final group project for CS382.
 This project pulls inspiration from the game [*Race the Sun*](https://store.steampowered.com/app/253030/Race_The_Sun/)
 
+## How to Run
+1. Open the project in Unity.
+2. Navigate to the `Scenes` folder in the project.
+3. Open the `Start` scene.
+4. Press the play button in the Unity Editor.
+5. Read over the controls and instructions, then press the `Play` button to begin the game.
+
 ## References
 - [Race the Sun](https://store.steampowered.com/app/253030/Race_The_Sun/)
 - [Unity Game Engine](https://unity.com/)
