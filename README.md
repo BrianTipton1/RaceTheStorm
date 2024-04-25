@@ -1,7 +1,10 @@
 # Race the Storm 
 
-Final group project for CS382.
-This project pulls inspiration from the game [*Race the Sun*](https://store.steampowered.com/app/253030/Race_The_Sun/)
+This repo contains the final group project for CS382, Spring 2024.
+
+This project pulls inspiration from the game [*Race the Sun*](https://store.steampowered.com/app/253030/Race_The_Sun/), as an endless runner game where the player must dodge obstacles and collect rocket powerups to survive as long as possible in a procedurally generated desert landscape.
+
+The game can be played in the Unity Editor, or via our Github Pages deployment [here](https://briantipton1.github.io/RaceTheStorm/).
 
 ## How to Run
 1. Open the project in Unity.
